@@ -22,6 +22,6 @@ Sistema professionale per la gestione delle sedute d'esame di teoria patente.
 - Dati salvati nel browser locale
 
 ## Licenza
-MIT - Libero utilizzo per tutte le autoscuole
+Protetto a Copyright non vendibile e non riproducibile!
 
 Sviluppato con ❤️ da ABA Autoscuole
