@@ -9,12 +9,6 @@ Sistema professionale per la gestione delle sedute d'esame di teoria patente.
 - ✅ Generazione PDF mensile ottimizzato per stampa
 - ✅ Salvataggio dati in locale (nessun server richiesto)
 
-## Come Usare
-1. Apri l'applicazione nel browser
-2. Seleziona una data dal calendario
-3. Aggiungi gli allievi (max 4 per data)
-4. Genera il PDF mensile per la stampa
-
 ## Tecnologie
 - HTML5/CSS3/JavaScript puro
 - Nessuna dipendenza esterna
