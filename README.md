@@ -22,6 +22,6 @@ Sistema professionale per la gestione delle sedute d'esame di teoria patente.
 - Dati salvati nel browser locale
 
 ## Licenza
-Protetto a Copyright non vendibile e non riproducibile!
+© Autoscuola ABA – 2025. I testi, le immagini, il logo, i video e ogni contenuto presente sono protetti dalla Legge 22 aprile 1941, n. 633 sul diritto d’autore e successive modifiche. È severamente vietata la riproduzione, anche solo parziale, senza autorizzazione scritta del titolare.
 
 Sviluppato con ❤️ da ABA Autoscuole
