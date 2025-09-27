@@ -1,0 +1,2452 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Pianificatore Esami di Teoria ABA</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        :root {
+            --primary: #dc2626;
+            --primary-dark: #b91c1c;
+            --primary-light: #ef4444;
+            --azzurro: #7dd3fc;
+            --azzurro-dark: #38bdf8;
+            --azzurro-darker: #0ea5e9;
+            --azzurro-light: #bae6fd;
+            --warning: #fb923c;
+            --danger: #dc2626;
+            --glass-bg: rgba(255, 255, 255, 0.95);
+            --glass-border: rgba(255, 255, 255, 0.3);
+            --shadow: rgba(0, 0, 0, 0.1);
+            --text-dark: #1a1a1a;
+            --text-gray: #666;
+        }
+
+        body {
+            font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #7dd3fc 0%, #dc2626 100%);
+            min-height: 100vh;
+            padding: 15px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px);
+            background-size: 50px 50px;
+            animation: moveGrid 20s linear infinite;
+            pointer-events: none;
+        }
+
+        @keyframes moveGrid {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(50px, 50px); }
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Glassmorphism panels */
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1),
+                        inset 0 1px 1px rgba(255, 255, 255, 0.5);
+            overflow: hidden;
+            position: relative;
+        }
+
+        .glass-panel::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, 
+                transparent,
+                rgba(255, 255, 255, 0.5),
+                transparent
+            );
+        }
+
+        /* Header with logo */
+        .header {
+            padding: 25px;
+            margin-bottom: 20px;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .logo-container {
+            width: 200px;
+            height: 85px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: white;
+            border-radius: 16px;
+            padding: 10px;
+            box-shadow: 0 6px 20px rgba(220, 38, 38, 0.15);
+            border: 2px solid var(--primary-light);
+        }
+
+        .logo-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+        }
+
+        .logo-text {
+            font-size: 52px;
+            font-weight: 900;
+            letter-spacing: -3px;
+            color: var(--text-dark);
+            line-height: 1;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .logo-subtitle {
+            font-size: 12px;
+            letter-spacing: 3px;
+            color: var(--text-gray);
+            margin-top: 2px;
+            font-weight: 500;
+        }
+
+        .title-section {
+            flex: 1;
+            text-align: center;
+        }
+
+        .title-section h1 {
+            color: var(--text-dark);
+            font-size: 28px;
+            font-weight: 800;
+            margin: 0;
+            letter-spacing: -0.5px;
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 2px 4px rgba(220, 38, 38, 0.1);
+        }
+
+        .subtitle {
+            color: var(--text-gray);
+            font-size: 13px;
+            font-weight: 400;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: flex-end;
+            width: 100%;
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            font-family: 'Poppins', sans-serif;
+            letter-spacing: 0.3px;
+            touch-action: manipulation;
+        }
+
+        .btn-small {
+            padding: 8px 16px;
+            font-size: 12px;
+        }
+
+        .btn-large {
+            padding: 16px 28px;
+            font-size: 15px;
+            font-weight: 600;
+            border-radius: 14px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .btn-xl {
+            padding: 20px 36px;
+            font-size: 17px;
+            font-weight: 700;
+            border-radius: 16px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn-xxl {
+            padding: 24px 48px;
+            font-size: 20px;
+            font-weight: 800;
+            border-radius: 18px;
+            box-shadow: 0 10px 35px rgba(220, 38, 38, 0.35);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            animation: pulse-attention 2s infinite;
+        }
+
+        @keyframes pulse-attention {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+            100% { transform: scale(1); }
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .btn-glass-primary {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            box-shadow: 0 6px 20px rgba(220, 38, 38, 0.3);
+        }
+
+        .btn-glass-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(220, 38, 38, 0.4);
+            background: linear-gradient(135deg, var(--primary-light), var(--primary));
+        }
+
+        .btn-glass-azzurro {
+            background: linear-gradient(135deg, var(--azzurro), var(--azzurro-dark));
+            color: white;
+            box-shadow: 0 6px 20px rgba(125, 211, 252, 0.3);
+        }
+
+        .btn-glass-azzurro:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(125, 211, 252, 0.4);
+            background: linear-gradient(135deg, var(--azzurro), var(--azzurro-darker));
+        }
+
+        .btn-glass-secondary {
+            background: rgba(255, 255, 255, 0.2);
+            color: var(--text-dark);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-glass-secondary:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .btn-glass-danger {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: white;
+            box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);
+        }
+
+        .btn-glass-danger:hover {
+            transform: scale(1.05);
+            background: linear-gradient(135deg, #f87171, #ef4444);
+        }
+
+        /* Stats cards */
+        .stats-panel {
+            padding: 25px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .stats-panel.active {
+            display: block;
+        }
+
+        .stats-panel h2 {
+            font-weight: 600;
+            letter-spacing: -0.5px;
+            font-size: 20px;
+            margin-bottom: 20px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+        }
+
+        .stat-card {
+            padding: 20px;
+            border-radius: 16px;
+            color: white;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+            transition: transform 0.3s;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.2) 0%, transparent 70%);
+            animation: pulse 3s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 0.8; }
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px) scale(1.02);
+        }
+
+        .stat-card.red {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+        }
+
+        .stat-card.azzurro {
+            background: linear-gradient(135deg, var(--azzurro), var(--azzurro-dark));
+        }
+
+        .stat-card.mixed {
+            background: linear-gradient(135deg, var(--primary-light), var(--azzurro));
+        }
+
+        .stat-card.orange {
+            background: linear-gradient(135deg, #fb923c, #f97316);
+        }
+
+        .stat-value {
+            font-size: 36px;
+            font-weight: 800;
+            margin-bottom: 5px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            opacity: 0.95;
+            font-weight: 500;
+            position: relative;
+            z-index: 1;
+            letter-spacing: 0.5px;
+        }
+
+        /* Main content grid */
+        .main-content {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 20px;
+        }
+
+        /* Calendar styling */
+        .calendar-panel {
+            padding: 25px;
+        }
+
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .month-year {
+            font-size: 22px;
+            font-weight: 600;
+            color: var(--text-dark);
+            letter-spacing: -0.5px;
+        }
+
+        .nav-btn {
+            width: 40px;
+            height: 40px;
+            background: rgba(220, 38, 38, 0.1);
+            border: 1px solid rgba(220, 38, 38, 0.2);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            color: var(--primary);
+        }
+
+        .nav-btn:hover {
+            background: rgba(220, 38, 38, 0.2);
+            transform: scale(1.1);
+        }
+
+        .weekdays {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .weekday {
+            text-align: center;
+            font-weight: 500;
+            color: var(--text-gray);
+            font-size: 12px;
+            padding: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .days-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 8px;
+        }
+
+        .day {
+            aspect-ratio: 1;
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            background: rgba(255, 255, 255, 0.5);
+            backdrop-filter: blur(10px);
+            border: 2px solid transparent;
+            min-height: 45px;
+        }
+
+        .day:hover:not(.disabled) {
+            background: rgba(255, 255, 255, 0.8);
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .day.disabled {
+            opacity: 0.2;
+            cursor: not-allowed;
+            background: transparent;
+        }
+
+        .day.today {
+            background: rgba(220, 38, 38, 0.1);
+            border-color: var(--primary);
+            font-weight: 600;
+        }
+
+        .day.selected {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            transform: scale(1.1);
+            box-shadow: 0 8px 20px rgba(220, 38, 38, 0.4);
+        }
+
+        .day.has-students {
+            background: var(--azzurro-light);
+            border-color: var(--azzurro-dark);
+        }
+
+        .day.full {
+            background: rgba(251, 146, 60, 0.15);
+            border-color: var(--warning);
+        }
+
+        .day-number {
+            font-size: 16px;
+            font-weight: 500;
+        }
+
+        .student-count {
+            position: absolute;
+            bottom: 2px;
+            right: 2px;
+            background: linear-gradient(135deg, var(--azzurro-dark), var(--azzurro-darker));
+            color: white;
+            border-radius: 6px;
+            min-width: 18px;
+            height: 18px;
+            padding: 0 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            font-weight: 600;
+        }
+
+        .day.selected .student-count {
+            background: white;
+            color: var(--primary);
+        }
+
+        .day.full .student-count {
+            background: linear-gradient(135deg, var(--warning), #ea580c);
+        }
+
+        /* Management Panel */
+        .management-panel {
+            padding: 25px;
+        }
+
+        .panel-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-dark);
+            letter-spacing: -0.3px;
+        }
+
+        .date-info {
+            background: linear-gradient(135deg, rgba(220, 38, 38, 0.05), rgba(125, 211, 252, 0.05));
+            border: 1px solid rgba(220, 38, 38, 0.2);
+            border-radius: 16px;
+            padding: 18px;
+            margin-bottom: 18px;
+        }
+
+        .date-info-label {
+            font-size: 11px;
+            color: var(--primary);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+
+        .date-info-value {
+            font-size: 15px;
+            color: var(--text-dark);
+            font-weight: 500;
+        }
+
+        .slots-indicator {
+            display: flex;
+            gap: 6px;
+            margin-top: 12px;
+        }
+
+        .slot {
+            flex: 1;
+            height: 5px;
+            border-radius: 3px;
+            background: rgba(0, 0, 0, 0.1);
+            transition: all 0.3s;
+        }
+
+        .slot.occupied {
+            background: linear-gradient(90deg, var(--azzurro), var(--azzurro-dark));
+            box-shadow: 0 2px 8px rgba(125, 211, 252, 0.3);
+        }
+
+        .add-student-form {
+            background: rgba(255, 255, 255, 0.5);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 18px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .add-student-form h3 {
+            font-weight: 500;
+            font-size: 15px;
+            margin-bottom: 18px;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-gray);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .form-input, .form-select {
+            width: 100%;
+            padding: 12px 14px;
+            border: 2px solid rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            font-size: 14px;
+            transition: all 0.3s;
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .form-input:focus, .form-select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+            background: white;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .student-list {
+            max-height: 400px;
+            overflow-y: auto;
+            padding-right: 8px;
+        }
+
+        .student-list::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .student-list::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.05);
+            border-radius: 3px;
+        }
+
+        .student-list::-webkit-scrollbar-thumb {
+            background: rgba(220, 38, 38, 0.3);
+            border-radius: 3px;
+        }
+
+        .student-item {
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            padding: 14px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: all 0.3s;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .student-item:hover {
+            background: rgba(255, 255, 255, 0.9);
+            transform: translateX(5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .student-item.expiry-warning {
+            background: rgba(251, 191, 36, 0.1);
+            border: 1px solid rgba(251, 191, 36, 0.3);
+        }
+
+        .student-item.expiry-critical {
+            background: rgba(220, 38, 38, 0.1);
+            border: 1px solid rgba(220, 38, 38, 0.3);
+        }
+
+        .student-number {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+
+        .student-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .student-name {
+            font-weight: 500;
+            color: var(--text-dark);
+            margin-bottom: 4px;
+            font-size: 14px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .student-details {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .student-badge {
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-size: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            white-space: nowrap;
+        }
+
+        .badge-audio {
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+            color: white;
+        }
+
+        .badge-am {
+            background: linear-gradient(135deg, #a78bfa, #8b5cf6);
+            color: white;
+        }
+
+        .badge-b-a1 {
+            background: linear-gradient(135deg, var(--azzurro), var(--azzurro-dark));
+            color: white;
+        }
+
+        .expiry-badge {
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .expiry-badge.warning {
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+            color: white;
+        }
+
+        .expiry-badge.critical {
+            background: linear-gradient(135deg, #dc2626, #991b1b);
+            color: white;
+            animation: blink 1.5s infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        .student-time {
+            font-size: 10px;
+            color: #999;
+            font-weight: 400;
+        }
+
+        .student-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-icon {
+            width: 36px;
+            height: 36px;
+            background: rgba(255, 255, 255, 0.8);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+        }
+
+        .btn-icon:first-child {
+            /* Pulsante sposta data - più grande e evidente */
+            width: 42px;
+            height: 42px;
+            background: linear-gradient(135deg, var(--azzurro-light), var(--azzurro));
+            border: 2px solid var(--azzurro-dark);
+            font-size: 20px;
+        }
+
+        .btn-icon:first-child:hover {
+            background: linear-gradient(135deg, var(--azzurro), var(--azzurro-dark));
+            transform: scale(1.15);
+            box-shadow: 0 6px 20px rgba(125, 211, 252, 0.4);
+        }
+
+        .btn-icon:hover {
+            background: white;
+            transform: scale(1.1);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-icon.delete:hover {
+            background: var(--danger);
+            color: white;
+            border-color: var(--danger);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 50px 20px;
+            color: #999;
+        }
+
+        .empty-state-icon {
+            font-size: 48px;
+            margin-bottom: 12px;
+            opacity: 0.3;
+        }
+
+        .empty-state strong {
+            color: var(--text-gray);
+            font-size: 16px;
+            font-weight: 500;
+        }
+
+        .empty-state p {
+            font-size: 13px;
+            font-weight: 300;
+        }
+
+        .warning-message {
+            background: linear-gradient(135deg, rgba(251, 146, 60, 0.1), rgba(234, 88, 12, 0.1));
+            border: 1px solid rgba(251, 146, 60, 0.3);
+            color: #ea580c;
+            padding: 12px 16px;
+            border-radius: 10px;
+            font-size: 13px;
+            margin-bottom: 18px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 500;
+        }
+
+        .expiry-alert {
+            background: linear-gradient(135deg, rgba(220, 38, 38, 0.15), rgba(239, 68, 68, 0.15));
+            border: 2px solid var(--danger);
+            color: var(--danger);
+            padding: 14px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            font-weight: 500;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .expiry-warning-box {
+            background: linear-gradient(135deg, rgba(251, 191, 36, 0.15), rgba(245, 158, 11, 0.15));
+            border: 2px solid #f59e0b;
+            color: #92400e;
+            padding: 14px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            font-weight: 500;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* Modal for date change */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            padding: 20px;
+            animation: fadeIn 0.3s;
+        }
+
+        .modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 400px;
+            width: 100%;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            animation: slideIn 0.3s;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateY(-50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .modal-header {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #e5e5e5;
+        }
+
+        .modal-body {
+            margin-bottom: 20px;
+        }
+
+        .modal-footer {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 30px 20px;
+            color: white;
+            margin-top: 40px;
+        }
+
+        .footer-logo {
+            font-size: 28px;
+            font-weight: 800;
+            letter-spacing: -2px;
+            margin-bottom: 8px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .footer-text {
+            font-size: 12px;
+            opacity: 0.9;
+            line-height: 1.5;
+            font-weight: 300;
+        }
+
+        .footer-credits {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+            font-size: 10px;
+            opacity: 0.7;
+            font-weight: 300;
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+
+            .header {
+                padding: 20px;
+            }
+
+            .header-content {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .logo-section {
+                justify-content: center;
+                margin-bottom: 15px;
+            }
+
+            .logo-container {
+                width: 140px;
+                height: 60px;
+            }
+
+            .logo-text {
+                font-size: 36px;
+            }
+
+            .title-section {
+                text-align: center;
+                margin-bottom: 15px;
+            }
+
+            .title-section h1 {
+                font-size: 22px;
+                text-align: center;
+            }
+
+            .action-buttons {
+                justify-content: center;
+                gap: 10px;
+            }
+
+            .btn-large {
+                padding: 14px 24px;
+                font-size: 14px;
+                flex: 1;
+            }
+
+            .btn-xl {
+                padding: 16px 28px;
+                font-size: 15px;
+                width: 100%;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 10px;
+            }
+
+            .stat-value {
+                font-size: 28px;
+            }
+
+            .calendar-panel, .management-panel {
+                padding: 18px;
+            }
+
+            .month-year {
+                font-size: 18px;
+            }
+
+            .days-grid {
+                gap: 5px;
+            }
+
+            .day {
+                min-height: 38px;
+            }
+
+            .day-number {
+                font-size: 14px;
+            }
+
+            .weekday {
+                font-size: 10px;
+                padding: 5px;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .student-item {
+                padding: 12px;
+                flex-wrap: wrap;
+            }
+
+            .student-actions {
+                width: 100%;
+                justify-content: flex-end;
+                margin-top: 10px;
+                gap: 10px;
+            }
+
+            .btn-icon {
+                width: 42px;
+                height: 42px;
+                font-size: 18px;
+            }
+
+            .btn-icon:first-child {
+                width: 48px;
+                height: 48px;
+                font-size: 22px;
+            }
+
+            .modal-content {
+                margin: 20px;
+                padding: 20px;
+            }
+
+            .footer {
+                padding: 20px 15px;
+            }
+
+            .footer-logo {
+                font-size: 24px;
+            }
+
+            /* Stacking per mobile */
+            .management-panel {
+                order: -1;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header {
+                padding: 15px;
+            }
+
+            .logo-container {
+                width: 120px;
+                height: 50px;
+            }
+
+            .logo-text {
+                font-size: 30px;
+            }
+
+            .title-section h1 {
+                font-size: 18px;
+            }
+
+            .btn-large, .btn-xl {
+                padding: 12px 20px;
+                font-size: 13px;
+            }
+
+            .days-grid {
+                gap: 3px;
+            }
+
+            .day {
+                min-height: 32px;
+                border-radius: 8px;
+            }
+
+            .day-number {
+                font-size: 12px;
+            }
+
+            .student-count {
+                font-size: 9px;
+                min-width: 15px;
+                height: 15px;
+            }
+
+            .stat-card {
+                padding: 15px;
+            }
+
+            .stat-value {
+                font-size: 24px;
+            }
+
+            .stat-label {
+                font-size: 10px;
+            }
+        }
+
+        /* Loading animation */
+        @keyframes shimmer {
+            0% { background-position: -200px 0; }
+            100% { background-position: 200px 0; }
+        }
+
+        .loading {
+            background: linear-gradient(90deg, 
+                rgba(255,255,255,0.1) 25%, 
+                rgba(255,255,255,0.3) 50%, 
+                rgba(255,255,255,0.1) 75%);
+            background-size: 200px 100%;
+            animation: shimmer 1.5s infinite;
+        }
+
+        /* Touch optimizations */
+        @media (hover: none) {
+            .btn:hover {
+                transform: none;
+            }
+
+            .day:hover:not(.disabled) {
+                transform: none;
+            }
+
+            .btn-icon:hover {
+                transform: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header glass-panel">
+            <div class="header-content">
+                <div class="logo-section">
+                    <div class="logo-container">
+                        <div class="logo-wrapper">
+                            <div class="logo-text">ABA</div>
+                            <div class="logo-subtitle">AUTOSCUOLE</div>
+                        </div>
+                    </div>
+                    <div class="title-section">
+                        <h1>Pianificatore Esami di Teoria ABA</h1>
+                    </div>
+                </div>
+                <div class="action-buttons">
+                    <button class="btn btn-glass-secondary" onclick="toggleStats()">
+                        📊 Statistiche
+                    </button>
+                    <button class="btn btn-glass-primary btn-xxl" onclick="generatePDF()">
+                        📄 GENERA PDF
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stats Panel -->
+        <div class="stats-panel glass-panel" id="statsPanel">
+            <h2 style="color: var(--text-dark);">📈 Statistiche del Mese</h2>
+            <div class="stats-grid">
+                <div class="stat-card red">
+                    <div class="stat-value" id="totalStudents">0</div>
+                    <div class="stat-label">Allievi Totali</div>
+                </div>
+                <div class="stat-card azzurro">
+                    <div class="stat-value" id="examDays">0</div>
+                    <div class="stat-label">Giorni d'Esame</div>
+                </div>
+                <div class="stat-card mixed">
+                    <div class="stat-value" id="avgPerDay">0.0</div>
+                    <div class="stat-label">Media per Giorno</div>
+                </div>
+                <div class="stat-card orange">
+                    <div class="stat-value" id="specialNeeds">0</div>
+                    <div class="stat-label">Esigenze Speciali</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Calendar -->
+            <div class="calendar-panel glass-panel">
+                <div class="calendar-header">
+                    <button class="nav-btn" onclick="changeMonth(-1)">‹</button>
+                    <div class="month-year" id="monthYear"></div>
+                    <button class="nav-btn" onclick="changeMonth(1)">›</button>
+                </div>
+                <div class="weekdays">
+                    <div class="weekday">Dom</div>
+                    <div class="weekday">Lun</div>
+                    <div class="weekday">Mar</div>
+                    <div class="weekday">Mer</div>
+                    <div class="weekday">Gio</div>
+                    <div class="weekday">Ven</div>
+                    <div class="weekday">Sab</div>
+                </div>
+                <div class="days-grid" id="calendar"></div>
+            </div>
+
+            <!-- Management Panel -->
+            <div class="management-panel glass-panel">
+                <div class="panel-header">
+                    👥 Gestione Allievi
+                </div>
+                
+                <div id="managementContent">
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📆</div>
+                        <p><strong>Seleziona una data</strong></p>
+                        <p style="margin-top: 8px;">Clicca su un giorno del calendario</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Date Change Modal -->
+        <div id="dateModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    📅 Sposta Allievi a Nuova Data
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label>Seleziona la nuova data</label>
+                        <input type="date" id="newDate" class="form-input">
+                    </div>
+                    <div id="modalWarning" style="display: none;"></div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-glass-secondary" onclick="closeModal()">Annulla</button>
+                    <button class="btn btn-glass-primary" onclick="confirmMove()">Sposta</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <div class="footer-logo">ABA AUTOSCUOLE</div>
+            <div class="footer-text">
+                Sistema di Gestione Esami di Teoria<br>
+                Pianifica, organizza e stampa il riepilogo mensile delle sedute d'esame
+            </div>
+            <div class="footer-credits">
+                © 2025 ABA Autoscuole • Tutti i diritti riservati<br>
+                Sviluppato con ❤️ per semplificare la gestione degli esami<br>
+                v2.0 Professional Edition
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentDate = new Date();
+        let selectedDate = null;
+        let students = JSON.parse(localStorage.getItem('examStudents')) || {};
+        let editingIndex = null;
+        let movingStudents = null;
+        let movingSingleIndex = null; // Per gestire lo spostamento singolo
+
+        const monthNames = ['Gennaio', 'Febbraio', 'Marzo', 'Aprile', 'Maggio', 'Giugno',
+                          'Luglio', 'Agosto', 'Settembre', 'Ottobre', 'Novembre', 'Dicembre'];
+
+        function init() {
+            renderCalendar();
+            updateStats();
+        }
+
+        function renderCalendar() {
+            const year = currentDate.getFullYear();
+            const month = currentDate.getMonth();
+            const firstDay = new Date(year, month, 1).getDay();
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            const today = new Date();
+            
+            document.getElementById('monthYear').textContent = 
+                `${monthNames[month]} ${year}`;
+            
+            let html = '';
+            
+            // Giorni vuoti iniziali
+            for (let i = 0; i < firstDay; i++) {
+                html += '<div class="day disabled"></div>';
+            }
+            
+            // Giorni del mese
+            for (let day = 1; day <= daysInMonth; day++) {
+                const date = new Date(year, month, day);
+                const dateStr = getDateString(date);
+                const studentCount = students[dateStr]?.length || 0;
+                const isToday = date.toDateString() === today.toDateString();
+                const isSelected = selectedDate && 
+                                 selectedDate.toDateString() === date.toDateString();
+                const isFull = studentCount >= 4;
+                
+                let dayClass = 'day';
+                if (isToday) dayClass += ' today';
+                if (isSelected) dayClass += ' selected';
+                if (studentCount > 0 && !isSelected) {
+                    dayClass += isFull ? ' full' : ' has-students';
+                }
+                
+                html += `
+                    <div class="${dayClass}" onclick="selectDate(${year}, ${month}, ${day})">
+                        <div class="day-number">${day}</div>
+                        ${studentCount > 0 ? 
+                          `<div class="student-count">${studentCount}</div>` : ''}
+                    </div>
+                `;
+            }
+            
+            document.getElementById('calendar').innerHTML = html;
+        }
+
+        function selectDate(year, month, day) {
+            // Imposta l'ora a mezzogiorno per evitare qualsiasi problema di timezone
+            selectedDate = new Date(year, month, day, 12, 0, 0);
+            renderCalendar();
+            renderManagementPanel();
+        }
+
+        function renderManagementPanel() {
+            if (!selectedDate) {
+                document.getElementById('managementContent').innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📆</div>
+                        <p><strong>Seleziona una data</strong></p>
+                        <p style="margin-top: 8px;">Clicca su un giorno del calendario</p>
+                    </div>
+                `;
+                return;
+            }
+
+            const dateStr = getDateString(selectedDate);
+            const dayStudents = students[dateStr] || [];
+            const slotsRemaining = 4 - dayStudents.length;
+            
+            let html = `
+                <div class="date-info">
+                    <div class="date-info-label">Data Selezionata</div>
+                    <div class="date-info-value">
+                        ${selectedDate.toLocaleDateString('it-IT', {
+                            weekday: 'long',
+                            year: 'numeric',
+                            month: 'long',
+                            day: 'numeric'
+                        })}
+                    </div>
+                    <div class="slots-indicator">
+                        ${Array(4).fill(0).map((_, i) => 
+                            `<div class="slot ${i < dayStudents.length ? 'occupied' : ''}"></div>`
+                        ).join('')}
+                    </div>
+                    <div style="margin-top: 15px; font-size: 13px; color: ${slotsRemaining === 0 ? '#ea580c' : '#0ea5e9'};">
+                        ${slotsRemaining === 0 ? 
+                          '⚠️ Seduta completa' : 
+                          `✅ ${slotsRemaining} ${slotsRemaining === 1 ? 'posto disponibile' : 'posti disponibili'}`}
+                    </div>
+                    ${dayStudents.length > 0 ? `
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px;">
+                            <button class="btn btn-glass-secondary btn-small" onclick="moveAllStudents()">
+                                📅 Sposta tutti
+                            </button>
+                            <button class="btn btn-glass-danger btn-small" onclick="deleteAllStudents()">
+                                🗑️ Elimina tutti
+                            </button>
+                        </div>
+                    ` : ''}
+                </div>
+            `;
+
+            if (slotsRemaining > 0) {
+                html += `
+                    <div class="add-student-form">
+                        <h3 style="color: var(--text-dark);">
+                            ${editingIndex !== null ? '✏️ Modifica Allievo' : '➕ Aggiungi Allievo'}
+                        </h3>
+                        <div class="form-group">
+                            <label>Nome e Cognome</label>
+                            <input type="text" id="studentName" class="form-input" 
+                                   placeholder="Es: Mario Rossi" 
+                                   onkeypress="if(event.key === 'Enter') addStudent()">
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Tipo Esame</label>
+                                <select id="examType" class="form-select">
+                                    <option value="b-a1">🚗 Patenti B e A1</option>
+                                    <option value="audio">🔊 Con AUDIO</option>
+                                    <option value="am">🛵 Patente AM</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Data Iscrizione ⚠️</label>
+                                <input type="date" id="enrollmentDate" class="form-input" 
+                                       max="${new Date().toISOString().split('T')[0]}"
+                                       onchange="checkExpiryWarning()">
+                            </div>
+                        </div>
+                        <div id="expiryWarning" style="display: none;"></div>
+                        <div style="display: flex; gap: 15px; margin-top: 30px; padding-top: 20px; border-top: 2px solid rgba(220, 38, 38, 0.1);">
+                            <button class="btn btn-glass-primary" onclick="addStudent()" style="flex: 1; padding: 16px 28px;">
+                                ${editingIndex !== null ? 'Salva Modifiche' : 'Aggiungi Allievo'}
+                            </button>
+                            ${editingIndex !== null ? 
+                              `<button class="btn btn-glass-secondary" style="padding: 16px 28px;" onclick="cancelEdit()">Annulla</button>` : ''}
+                        </div>
+                    </div>
+                `;
+            } else {
+                html += `
+                    <div class="warning-message">
+                        ⚠️ Questa seduta ha raggiunto il limite massimo di 4 allievi
+                    </div>
+                `;
+            }
+
+            if (dayStudents.length > 0) {
+                html += '<div class="student-list">';
+                dayStudents.forEach((student, index) => {
+                    // Calcola stato scadenza
+                    const expiryInfo = calculateExpiryStatus(student.enrollmentDate, selectedDate);
+                    
+                    html += `
+                        <div class="student-item ${expiryInfo.critical ? 'expiry-critical' : expiryInfo.warning ? 'expiry-warning' : ''}">
+                            <div class="student-number">${index + 1}</div>
+                            <div class="student-info">
+                                <div class="student-name">${student.name}</div>
+                                <div class="student-details">
+                                    <span class="student-badge badge-${student.type}">
+                                        ${student.type === 'audio' ? '🔊 AUDIO' : 
+                                          student.type === 'am' ? '🛵 AM' : '🚗 B/A1'}
+                                    </span>
+                                    ${expiryInfo.message ? 
+                                      `<span class="expiry-badge ${expiryInfo.critical ? 'critical' : 'warning'}">
+                                        ${expiryInfo.message}
+                                      </span>` : ''}
+                                    <span class="student-time">
+                                        ${new Date(student.addedAt).toLocaleTimeString('it-IT', {
+                                            hour: '2-digit',
+                                            minute: '2-digit'
+                                        })}
+                                    </span>
+                                </div>
+                                ${student.enrollmentDate ? 
+                                  `<div style="font-size: 11px; color: #888; margin-top: 5px;">
+                                    Iscrizione: ${new Date(student.enrollmentDate).toLocaleDateString('it-IT')}
+                                    ${expiryInfo.daysRemaining !== null ? 
+                                      ` • ${expiryInfo.daysRemaining > 0 ? 
+                                        `Scade tra ${expiryInfo.daysRemaining} giorni` : 
+                                        '<span style="color: #dc2626;">SCADUTA</span>'}` : ''}
+                                  </div>` : ''}
+                            </div>
+                            <div class="student-actions">
+                                <button class="btn-icon" onclick="moveStudent(${index})">📅</button>
+                                <button class="btn-icon" onclick="editStudent(${index})">✏️</button>
+                                <button class="btn-icon delete" onclick="deleteStudent(${index})">🗑️</button>
+                            </div>
+                        </div>
+                    `;
+                });
+                html += '</div>';
+            } else {
+                html += `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">👤</div>
+                        <p><strong>Nessun allievo programmato</strong></p>
+                        <p style="margin-top: 8px;">
+                            Aggiungi il primo allievo per questa data
+                        </p>
+                    </div>
+                `;
+            }
+
+            document.getElementById('managementContent').innerHTML = html;
+            
+            if (editingIndex !== null) {
+                const student = dayStudents[editingIndex];
+                document.getElementById('studentName').value = student.name;
+                document.getElementById('examType').value = student.type;
+                if (student.enrollmentDate) {
+                    document.getElementById('enrollmentDate').value = student.enrollmentDate;
+                    checkExpiryWarning();
+                }
+                document.getElementById('studentName').focus();
+            }
+        }
+
+        function addStudent() {
+            const nameInput = document.getElementById('studentName');
+            const typeSelect = document.getElementById('examType');
+            const enrollmentInput = document.getElementById('enrollmentDate');
+            
+            if (!nameInput || !nameInput.value.trim()) {
+                alert('Inserisci il nome dell\'allievo');
+                return;
+            }
+            
+            if (!enrollmentInput || !enrollmentInput.value) {
+                alert('⚠️ ATTENZIONE: Inserisci la data di iscrizione!\n\nQuesto dato è fondamentale per verificare la validità dell\'esame.');
+                return;
+            }
+            
+            const dateStr = getDateString(selectedDate);
+            if (!students[dateStr]) {
+                students[dateStr] = [];
+            }
+            
+            // Verifica scadenza
+            const expiryCheck = calculateExpiryStatus(enrollmentInput.value, selectedDate);
+            if (expiryCheck.expired) {
+                alert('❌ ISCRIZIONE SCADUTA!\n\nL\'iscrizione di questo allievo è scaduta. Non può sostenere l\'esame in questa data.\n\nScadenza: ' + expiryCheck.expiryDate);
+                return;
+            }
+            
+            if (expiryCheck.critical) {
+                if (!confirm('⚠️ ATTENZIONE - ULTIMO TENTATIVO!\n\n' + expiryCheck.message + '\n\nSe l\'allievo non passa questo esame, NON potrà ripeterlo!\n\nVuoi davvero prenotarlo per questa data?')) {
+                    return;
+                }
+            }
+            
+            if (editingIndex !== null) {
+                students[dateStr][editingIndex] = {
+                    name: nameInput.value.trim(),
+                    type: typeSelect.value,
+                    enrollmentDate: enrollmentInput.value,
+                    addedAt: students[dateStr][editingIndex].addedAt
+                };
+                editingIndex = null;
+            } else {
+                if (students[dateStr].length >= 4) {
+                    alert('Questa seduta ha già raggiunto il limite massimo di 4 allievi');
+                    return;
+                }
+                
+                students[dateStr].push({
+                    name: nameInput.value.trim(),
+                    type: typeSelect.value,
+                    enrollmentDate: enrollmentInput.value,
+                    addedAt: new Date().toISOString()
+                });
+            }
+            
+            saveData();
+            renderCalendar();
+            renderManagementPanel();
+            updateStats();
+        }
+
+        function calculateExpiryStatus(enrollmentDate, examDate) {
+            if (!enrollmentDate) {
+                return { warning: false, critical: false, expired: false, message: '', daysRemaining: null };
+            }
+            
+            const enrollment = new Date(enrollmentDate);
+            const exam = examDate || selectedDate;
+            const expiry = new Date(enrollment);
+            expiry.setMonth(expiry.getMonth() + 6); // 6 mesi di validità
+            
+            const lastChance = new Date(expiry);
+            lastChance.setDate(lastChance.getDate() - 30); // Ultimo mese
+            
+            const daysRemaining = Math.ceil((expiry - exam) / (1000 * 60 * 60 * 24));
+            
+            let result = {
+                warning: false,
+                critical: false,
+                expired: false,
+                message: '',
+                daysRemaining: daysRemaining,
+                expiryDate: expiry.toLocaleDateString('it-IT')
+            };
+            
+            if (exam > expiry) {
+                result.expired = true;
+                result.critical = true;
+                result.message = '❌ SCADUTA';
+            } else if (exam >= lastChance) {
+                result.critical = true;
+                result.warning = true;
+                result.message = '⚠️ ULTIMO TENTATIVO';
+            } else if (daysRemaining <= 60) {
+                result.warning = true;
+                result.message = '⏰ SCADENZA VICINA';
+            }
+            
+            return result;
+        }
+
+        function checkExpiryWarning() {
+            const enrollmentInput = document.getElementById('enrollmentDate');
+            const warningDiv = document.getElementById('expiryWarning');
+            
+            if (!enrollmentInput || !enrollmentInput.value || !selectedDate) {
+                warningDiv.style.display = 'none';
+                return;
+            }
+            
+            const status = calculateExpiryStatus(enrollmentInput.value, selectedDate);
+            
+            if (status.expired) {
+                warningDiv.innerHTML = `
+                    <div class="expiry-alert">
+                        ❌ <strong>ISCRIZIONE SCADUTA!</strong> L'iscrizione scade il ${status.expiryDate}. 
+                        Non è possibile sostenere l'esame dopo questa data.
+                    </div>
+                `;
+                warningDiv.style.display = 'block';
+            } else if (status.critical) {
+                warningDiv.innerHTML = `
+                    <div class="expiry-alert">
+                        ⚠️ <strong>ATTENZIONE - ULTIMO TENTATIVO!</strong> 
+                        L'iscrizione scade il ${status.expiryDate} (${status.daysRemaining} giorni). 
+                        Se non passa questo esame, NON potrà ripeterlo!
+                    </div>
+                `;
+                warningDiv.style.display = 'block';
+            } else if (status.warning) {
+                warningDiv.innerHTML = `
+                    <div class="expiry-warning-box">
+                        ⏰ <strong>Scadenza vicina:</strong> ${status.expiryDate} (${status.daysRemaining} giorni rimanenti)
+                    </div>
+                `;
+                warningDiv.style.display = 'block';
+            } else {
+                warningDiv.innerHTML = `
+                    <div style="padding: 10px; background: rgba(74, 222, 128, 0.1); border: 1px solid #4ade80; border-radius: 8px; color: #16a34a;">
+                        ✅ Iscrizione valida fino al ${status.expiryDate} (${status.daysRemaining} giorni)
+                    </div>
+                `;
+                warningDiv.style.display = 'block';
+            }
+        }
+
+        function editStudent(index) {
+            editingIndex = index;
+            renderManagementPanel();
+        }
+
+        function cancelEdit() {
+            editingIndex = null;
+            renderManagementPanel();
+        }
+
+        function deleteStudent(index) {
+            if (confirm('Rimuovere questo allievo dalla seduta?')) {
+                const dateStr = getDateString(selectedDate);
+                students[dateStr].splice(index, 1);
+                
+                if (students[dateStr].length === 0) {
+                    delete students[dateStr];
+                }
+                
+                saveData();
+                renderCalendar();
+                renderManagementPanel();
+                updateStats();
+            }
+        }
+
+        function deleteAllStudents() {
+            const dateStr = getDateString(selectedDate);
+            const count = students[dateStr]?.length || 0;
+            
+            if (count === 0) return;
+            
+            if (confirm(`Vuoi davvero eliminare TUTTI i ${count} allievi da questa data?\n\nQuesta azione non può essere annullata!`)) {
+                delete students[dateStr];
+                saveData();
+                renderCalendar();
+                renderManagementPanel();
+                updateStats();
+            }
+        }
+
+        function moveStudent(index) {
+            const dateStr = getDateString(selectedDate);
+            movingStudents = [students[dateStr][index]];
+            movingSingleIndex = index;
+            
+            document.getElementById('dateModal').classList.add('active');
+            document.getElementById('newDate').value = '';
+            document.getElementById('modalWarning').style.display = 'none';
+            
+            // Aggiorna il titolo del modal per indicare spostamento singolo
+            document.querySelector('.modal-header').innerHTML = `
+                📅 Sposta ${movingStudents[0].name} a Nuova Data
+            `;
+        }
+
+        function moveAllStudents() {
+            const dateStr = getDateString(selectedDate);
+            movingStudents = students[dateStr] || [];
+            movingSingleIndex = null; // Reset per indicare spostamento multiplo
+            
+            if (movingStudents.length === 0) return;
+            
+            document.getElementById('dateModal').classList.add('active');
+            document.getElementById('newDate').value = '';
+            document.getElementById('modalWarning').style.display = 'none';
+            
+            // Aggiorna il titolo del modal per indicare spostamento multiplo
+            document.querySelector('.modal-header').innerHTML = `
+                📅 Sposta Tutti gli Allievi (${movingStudents.length}) a Nuova Data
+            `;
+        }
+
+        function closeModal() {
+            document.getElementById('dateModal').classList.remove('active');
+            movingStudents = null;
+            movingSingleIndex = null;
+            // Ripristina il titolo generico
+            document.querySelector('.modal-header').innerHTML = '📅 Sposta Allievi a Nuova Data';
+        }
+
+        function confirmMove() {
+            const newDateInput = document.getElementById('newDate').value;
+            
+            if (!newDateInput) {
+                alert('Seleziona una data di destinazione');
+                return;
+            }
+            
+            const oldDateStr = getDateString(selectedDate);
+            const newDateStr = newDateInput; // Usa sempre la stringa diretta
+            
+            if (oldDateStr === newDateStr) {
+                alert('La data di destinazione è la stessa di quella attuale');
+                return;
+            }
+            
+            // Controlla disponibilità nella nuova data
+            const existingStudents = students[newDateStr]?.length || 0;
+            const movingCount = movingStudents.length;
+            
+            if (existingStudents + movingCount > 4) {
+                alert(`La data selezionata ha già ${existingStudents} allievi.\n\nNon c'è spazio per ${movingCount === 1 ? 'questo allievo' : `tutti i ${movingCount} allievi da spostare`}.\n\nPosti disponibili: ${4 - existingStudents}`);
+                return;
+            }
+            
+            // Effettua lo spostamento
+            if (!students[newDateStr]) {
+                students[newDateStr] = [];
+            }
+            
+            students[newDateStr].push(...movingStudents);
+            
+            // Se è uno spostamento singolo, rimuovi solo quell'allievo
+            if (movingSingleIndex !== null) {
+                students[oldDateStr].splice(movingSingleIndex, 1);
+                if (students[oldDateStr].length === 0) {
+                    delete students[oldDateStr];
+                }
+            } else {
+                // Spostamento multiplo - rimuovi tutti
+                delete students[oldDateStr];
+            }
+            
+            saveData();
+            
+            // Crea la data per la visualizzazione senza problemi di timezone
+            const [year, month, day] = newDateStr.split('-').map(Number);
+            selectedDate = new Date(year, month - 1, day, 12, 0, 0); // Metto ore 12 per sicurezza
+            currentDate = new Date(year, month - 1, day, 12, 0, 0);
+            
+            renderCalendar();
+            renderManagementPanel();
+            updateStats();
+            closeModal();
+            
+            const message = movingSingleIndex !== null 
+                ? `✅ ${movingStudents[0].name} spostato con successo`
+                : `✅ ${movingCount} allievi spostati con successo`;
+            
+            alert(`${message} alla data:\n${selectedDate.toLocaleDateString('it-IT', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            })}`);
+        }
+
+        function changeMonth(direction) {
+            currentDate.setMonth(currentDate.getMonth() + direction);
+            renderCalendar();
+            updateStats();
+        }
+
+        function getDateString(date) {
+            // FIX DEFINITIVO: usa sempre la data locale, mai UTC
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
+
+        function saveData() {
+            localStorage.setItem('examStudents', JSON.stringify(students));
+        }
+
+        function toggleStats() {
+            const panel = document.getElementById('statsPanel');
+            panel.classList.toggle('active');
+        }
+
+        function updateStats() {
+            const year = currentDate.getFullYear();
+            const month = currentDate.getMonth();
+            
+            let totalStudents = 0;
+            let examDays = 0;
+            let specialNeeds = 0;
+            let criticalExpiry = 0;
+            
+            Object.keys(students).forEach(dateStr => {
+                const date = new Date(dateStr);
+                if (date.getFullYear() === year && date.getMonth() === month) {
+                    examDays++;
+                    students[dateStr].forEach(student => {
+                        totalStudents++;
+                        if (student.type === 'audio' || student.type === 'am') {
+                            specialNeeds++;
+                        }
+                        // Controlla scadenze critiche
+                        if (student.enrollmentDate) {
+                            const status = calculateExpiryStatus(student.enrollmentDate, date);
+                            if (status.critical || status.expired) {
+                                criticalExpiry++;
+                            }
+                        }
+                    });
+                }
+            });
+            
+            const avgPerDay = examDays > 0 ? (totalStudents / examDays).toFixed(1) : '0.0';
+            
+            document.getElementById('totalStudents').textContent = totalStudents;
+            document.getElementById('examDays').textContent = examDays;
+            document.getElementById('avgPerDay').textContent = avgPerDay;
+            
+            // Cambia l'ultima statistica per mostrare scadenze critiche se ci sono
+            const specialNeedsElement = document.getElementById('specialNeeds');
+            const statCard = specialNeedsElement.parentElement.parentElement;
+            
+            if (criticalExpiry > 0) {
+                specialNeedsElement.textContent = criticalExpiry;
+                specialNeedsElement.nextElementSibling.textContent = 'Scadenze Critiche';
+                statCard.className = 'stat-card red';
+            } else {
+                specialNeedsElement.textContent = specialNeeds;
+                specialNeedsElement.nextElementSibling.textContent = 'Esigenze Speciali';
+                statCard.className = 'stat-card orange';
+            }
+        }
+
+        function generatePDF() {
+            const year = currentDate.getFullYear();
+            const month = currentDate.getMonth();
+            const monthName = `${monthNames[month]} ${year}`;
+            
+            // Raccogli dati del mese
+            const monthData = {};
+            let totalStudents = 0;
+            let totalAudio = 0;
+            let totalAM = 0;
+            
+            Object.keys(students).forEach(dateStr => {
+                const date = new Date(dateStr);
+                if (date.getFullYear() === year && date.getMonth() === month) {
+                    monthData[dateStr] = students[dateStr];
+                    students[dateStr].forEach(student => {
+                        totalStudents++;
+                        if (student.type === 'audio') totalAudio++;
+                        if (student.type === 'am') totalAM++;
+                    });
+                }
+            });
+            
+            const sortedDates = Object.keys(monthData).sort();
+            
+            // DIMENSIONI OTTIMIZZATE PER LA STAMPA - PERFETTO EQUILIBRIO
+            let baseFontSize = 12;       // Testo normale leggibile
+            let headerFontSize = 13;      // Intestazioni chiare
+            let titleFontSize = 18;      // Titolo ben visibile
+            let subTitleFontSize = 15;    // Sottotitoli nitidi
+            let padding = 12;             // Spaziatura comoda
+            let logoSize = 36;           // Logo ben definito
+            let monthBannerSize = 18;    // Banner evidente
+            
+            // Riduzione graduale solo quando davvero necessario
+            if (totalStudents > 100) {
+                // Tantissimi allievi - ancora leggibile
+                baseFontSize = 10;
+                headerFontSize = 11;
+                titleFontSize = 15;
+                subTitleFontSize = 13;
+                padding = 9;
+            } else if (totalStudents > 60) {
+                // Molti allievi - compatto ma chiaro
+                baseFontSize = 11;
+                headerFontSize = 12;
+                titleFontSize = 16;
+                subTitleFontSize = 14;
+                padding = 10;
+            } else if (totalStudents > 30) {
+                // Contenuto medio - leggermente ridotto
+                baseFontSize = 11.5;
+                headerFontSize = 12.5;
+                titleFontSize = 17;
+                subTitleFontSize = 14;
+                padding = 11;
+            }
+            
+            let html = `
+                <!DOCTYPE html>
+                <html lang="it">
+                <head>
+                    <meta charset="UTF-8">
+                    <title>Riepilogo Esami - ${monthName}</title>
+                    <style>
+                        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap');
+                        
+                        @page { 
+                            size: A4; 
+                            margin: ${totalStudents > 60 ? '8mm' : '10mm'};
+                            /* Rimuove completamente header e footer del browser */
+                        }
+                        
+                        @page:first {
+                            margin-top: ${totalStudents > 60 ? '8mm' : '10mm'};
+                        }
+                        
+                        @media print {
+                            /* Rimuove header e footer del browser */
+                            @page {
+                                margin-top: 0;
+                                margin-bottom: 0;
+                            }
+                            
+                            body {
+                                -webkit-print-color-adjust: exact;
+                                print-color-adjust: exact;
+                                margin-top: ${totalStudents > 60 ? '8mm' : '10mm'};
+                                margin-bottom: ${totalStudents > 60 ? '8mm' : '10mm'};
+                            }
+                            
+                            /* Nasconde completamente gli elementi di sistema */
+                            * {
+                                -webkit-print-color-adjust: exact !important;
+                                color-adjust: exact !important;
+                            }
+                        }
+                        
+                        body { 
+                            font-family: 'Poppins', -apple-system, sans-serif;
+                            line-height: 1.3;
+                            color: #333;
+                            max-width: 800px;
+                            margin: 0 auto;
+                            font-size: ${baseFontSize}px;
+                        }
+                        
+                        .header {
+                            text-align: center;
+                            padding-bottom: 15px;
+                            margin-bottom: ${totalStudents > 50 ? '15px' : '20px'};
+                            position: relative;
+                        }
+                        
+                        .summary-box {
+                            background: #f8f9fa;
+                            padding: ${padding}px;
+                            border-radius: 6px;
+                            margin: ${padding}px 0;
+                            border: 1px solid #dee2e6;
+                        }
+                        
+                        .summary-grid {
+                            display: grid;
+                            grid-template-columns: repeat(4, 1fr);
+                            gap: 10px;
+                            text-align: center;
+                        }
+                        
+                        .summary-item {
+                            padding: ${totalStudents > 50 ? '4px' : '6px'};
+                        }
+                        
+                        .summary-value {
+                            font-size: ${totalStudents > 50 ? '14px' : '16px'};
+                            font-weight: 700;
+                            color: #dc2626;
+                            margin-bottom: 2px;
+                            font-family: 'Poppins', sans-serif;
+                        }
+                        
+                        .summary-label {
+                            font-size: ${totalStudents > 50 ? '7px' : '8px'};
+                            color: #666;
+                            text-transform: uppercase;
+                            letter-spacing: 0.3px;
+                            font-weight: 500;
+                        }
+                        
+                        .day-section {
+                            margin: ${totalStudents > 50 ? '12px' : '15px'} 0;
+                            padding: ${padding}px;
+                            background: #fafbfc;
+                            border-left: 2px solid #7dd3fc;
+                            page-break-inside: avoid;
+                        }
+                        
+                        .day-header {
+                            display: flex;
+                            justify-content: space-between;
+                            align-items: center;
+                            margin-bottom: ${totalStudents > 50 ? '6px' : '8px'};
+                            color: #1a1a1a;
+                            font-size: ${headerFontSize}px;
+                            font-weight: 500;
+                        }
+                        
+                        .slots-info {
+                            font-size: ${baseFontSize - 1}px;
+                            padding: 2px 6px;
+                            background: white;
+                            border-radius: 10px;
+                            color: #0ea5e9;
+                            border: 1px solid #7dd3fc;
+                            font-weight: 500;
+                        }
+                        
+                        .student-table {
+                            width: 100%;
+                            border-collapse: collapse;
+                            background: white;
+                        }
+                        
+                        .student-table th {
+                            background: #f1f3f5;
+                            color: #495057;
+                            padding: ${totalStudents > 50 ? '4px' : '6px'};
+                            text-align: left;
+                            font-weight: 600;
+                            font-size: ${baseFontSize}px;
+                            text-transform: uppercase;
+                            letter-spacing: 0.3px;
+                        }
+                        
+                        .student-table td {
+                            padding: ${totalStudents > 50 ? '4px 3px' : '6px 4px'};
+                            border-bottom: 1px solid #e9ecef;
+                            font-weight: 400;
+                            font-size: ${baseFontSize}px;
+                        }
+                        
+                        .student-table tr:last-child td {
+                            border-bottom: none;
+                        }
+                        
+                        .type-badge {
+                            display: inline-block;
+                            padding: 1px 4px;
+                            border-radius: 3px;
+                            font-size: ${baseFontSize - 1}px;
+                            font-weight: 600;
+                        }
+                        
+                        .type-audio {
+                            background: #fff3cd;
+                            color: #856404;
+                        }
+                        
+                        .type-am {
+                            background: #e7d6ff;
+                            color: #5a189a;
+                        }
+                        
+                        .type-b-a1 {
+                            background: #e0f2fe;
+                            color: #0369a1;
+                        }
+                        
+                        .no-data {
+                            text-align: center;
+                            padding: 40px;
+                            color: #868e96;
+                        }
+                        
+                        .warning-box {
+                            background: #fff5f5;
+                            border: 1px solid #ffc9c9;
+                            color: #c92a2a;
+                            padding: ${totalStudents > 50 ? '3px 6px' : '4px 8px'};
+                            border-radius: 4px;
+                            margin: 6px 0;
+                            font-size: ${baseFontSize}px;
+                            font-weight: 500;
+                        }
+                        
+                        /* Stili per scadenze */
+                        .expiry-legend {
+                            margin-top: 8px;
+                            padding-top: 8px;
+                            border-top: 1px solid #dee2e6;
+                            font-size: ${baseFontSize - 2}px;
+                            display: flex;
+                            justify-content: center;
+                            gap: 10px;
+                            flex-wrap: wrap;
+                        }
+                        
+                        .legend-item {
+                            display: inline-flex;
+                            align-items: center;
+                            gap: 3px;
+                        }
+                        
+                        .legend-color {
+                            display: inline-block;
+                            width: 8px;
+                            height: 8px;
+                            border-radius: 1px;
+                        }
+                    </style>
+                </head>
+                <body>
+                    <div class="header">
+                        <div style="width: 100px; height: 40px; background: white; border: 1px solid #dc2626; border-radius: 6px; margin: 0 auto 8px auto; display: flex; align-items: center; justify-content: center; box-shadow: 0 1px 3px rgba(220, 38, 38, 0.1);">
+                            <div style="text-align: center;">
+                                <div style="font-size: ${logoSize}px; font-weight: 900; letter-spacing: -1px; color: #1a1a1a; font-family: 'Poppins', sans-serif; line-height: 1;">ABA</div>
+                                <div style="font-size: 6px; letter-spacing: 1px; color: #666; margin-top: 0; font-weight: 500;">AUTOSCUOLE</div>
+                            </div>
+                        </div>
+                        <h1 style="color: #1a1a1a; margin: 5px 0 8px 0; font-size: ${titleFontSize}px; font-weight: 600;">Pianificazione Esami di Teoria</h1>
+                        <div style="color: #dc2626; font-size: ${monthBannerSize}px; font-weight: 700; letter-spacing: 0px; text-transform: uppercase; margin: 8px auto; padding: 4px 10px; background: linear-gradient(to right, rgba(220, 38, 38, 0.05), rgba(125, 211, 252, 0.05)); border-radius: 4px; border: 1px solid #dc2626; display: inline-block;">
+                            ${monthName}
+                        </div>
+                    </div>
+                    
+                    <div class="summary-box">
+                        <div class="summary-grid">
+                            <div class="summary-item">
+                                <div class="summary-value">${totalStudents}</div>
+                                <div class="summary-label">Totale Allievi</div>
+                            </div>
+                            <div class="summary-item">
+                                <div class="summary-value">${sortedDates.length}</div>
+                                <div class="summary-label">Giorni Esame</div>
+                            </div>
+                            <div class="summary-item">
+                                <div class="summary-value">${totalAudio}</div>
+                                <div class="summary-label">Con Audio</div>
+                            </div>
+                            <div class="summary-item">
+                                <div class="summary-value">${totalAM}</div>
+                                <div class="summary-label">Patenti AM</div>
+                            </div>
+                        </div>
+                        <div class="expiry-legend">
+                            <span class="legend-item">
+                                <span class="legend-color" style="background: #fee2e2;"></span>
+                                <span>Scaduta</span>
+                            </span>
+                            <span class="legend-item">
+                                <span class="legend-color" style="background: #fef2f2;"></span>
+                                <span>&lt;30gg</span>
+                            </span>
+                            <span class="legend-item">
+                                <span class="legend-color" style="background: #fff7ed;"></span>
+                                <span>&lt;60gg</span>
+                            </span>
+                            <span class="legend-item">
+                                <span class="legend-color" style="background: #fef9c3;"></span>
+                                <span>&lt;90gg</span>
+                            </span>
+                            <span class="legend-item">
+                                <span class="legend-color" style="background: #f0fdf4;"></span>
+                                <span>&gt;90gg</span>
+                            </span>
+                        </div>
+                    </div>
+            `;
+            
+            if (sortedDates.length === 0) {
+                html += `
+                    <div class="no-data">
+                        <h2 style="color: #adb5bd; font-size: ${titleFontSize}px;">Nessun esame programmato</h2>
+                        <p style="font-size: ${baseFontSize}px;">Non ci sono sedute d'esame pianificate per questo mese</p>
+                    </div>
+                `;
+            } else {
+                sortedDates.forEach(dateStr => {
+                    const date = new Date(dateStr);
+                    const dayStudents = monthData[dateStr];
+                    const dayName = date.toLocaleDateString('it-IT', {
+                        weekday: 'long',
+                        day: 'numeric',
+                        month: 'long',
+                        year: 'numeric'
+                    });
+                    
+                    html += `
+                        <div class="day-section">
+                            <div class="day-header">
+                                <span>${dayName}</span>
+                                <span class="slots-info">${dayStudents.length}/4 posti</span>
+                            </div>
+                            ${dayStudents.length === 4 ? 
+                              '<div class="warning-box">⚠️ Seduta completa</div>' : ''}
+                            <table class="student-table">
+                                <thead>
+                                    <tr>
+                                        <th style="width: 20px;">N°</th>
+                                        <th>Nome Allievo</th>
+                                        <th style="width: 45px;">Tipo</th>
+                                        <th style="width: 65px;">Scadenza</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                    `;
+                    
+                    dayStudents.forEach((student, index) => {
+                        const typeLabel = student.type === 'audio' ? 'AUDIO' :
+                                        student.type === 'am' ? 'AM' : 'B/A1';
+                        const typeClass = student.type === 'audio' ? 'type-audio' :
+                                        student.type === 'am' ? 'type-am' : 'type-b-a1';
+                        
+                        // Calcola stato scadenza
+                        const expiryInfo = student.enrollmentDate ? 
+                            calculateExpiryStatus(student.enrollmentDate, date) : null;
+                        
+                        let rowStyle = '';
+                        
+                        if (expiryInfo) {
+                            if (expiryInfo.expired) {
+                                rowStyle = 'background: #fee2e2;';
+                            } else if (expiryInfo.critical) {
+                                rowStyle = 'background: #fef2f2;';
+                            } else if (expiryInfo.warning) {
+                                rowStyle = 'background: #fff7ed;';
+                            }
+                        }
+                        
+                        html += `
+                            <tr style="${rowStyle}">
+                                <td style="text-align: center; font-weight: bold;">${index + 1}</td>
+                                <td style="font-size: ${baseFontSize}px;">
+                                    ${student.name}
+                                    ${expiryInfo && (expiryInfo.expired || expiryInfo.critical) ? 
+                                      `<span style="color: #dc2626; font-weight: 700; font-size: ${baseFontSize - 1}px;"> ⚠️</span>` : ''}
+                                </td>
+                                <td>
+                                    <span class="type-badge ${typeClass}">${typeLabel}</span>
+                                </td>
+                                <td style="font-size: ${baseFontSize - 1}px;">
+                                    ${student.enrollmentDate ? 
+                                      (() => {
+                                          const enrollDate = new Date(student.enrollmentDate);
+                                          const expiryDate = new Date(enrollDate);
+                                          expiryDate.setMonth(expiryDate.getMonth() + 6);
+                                          const daysRemaining = Math.ceil((expiryDate - date) / (1000 * 60 * 60 * 24));
+                                          
+                                          let cellBg = '';
+                                          let textColor = '#333';
+                                          
+                                          if (daysRemaining <= 0) {
+                                              cellBg = 'background: #fee2e2;';
+                                              textColor = '#dc2626';
+                                          } else if (daysRemaining <= 30) {
+                                              cellBg = 'background: #fef2f2;';
+                                              textColor = '#dc2626';
+                                          } else if (daysRemaining <= 60) {
+                                              cellBg = 'background: #fff7ed;';
+                                              textColor = '#ea580c';
+                                          } else if (daysRemaining <= 90) {
+                                              cellBg = 'background: #fef9c3;';
+                                              textColor = '#a16207';
+                                          } else {
+                                              cellBg = 'background: #f0fdf4;';
+                                              textColor = '#16a34a';
+                                          }
+                                          
+                                          return `
+                                            <div style="${cellBg} padding: 2px; border-radius: 2px; margin: -2px; color: ${textColor}; font-weight: 600;">
+                                              ${expiryDate.toLocaleDateString('it-IT', {day: '2-digit', month: '2-digit', year: '2-digit'})}
+                                              <span style="font-size: ${baseFontSize - 2}px;">
+                                                (${daysRemaining > 0 ? `${daysRemaining}gg` : 'SCAD'})
+                                              </span>
+                                            </div>
+                                          `;
+                                      })() : 
+                                      '<div style="color: #868e96;">-</div>'}
+                                </td>
+                            </tr>
+                        `;
+                    });
+                    
+                    html += `
+                                </tbody>
+                            </table>
+                        </div>
+                    `;
+                });
+            }
+            
+            html += `
+                </body>
+                </html>
+            `;
+            
+            const printWindow = window.open('', '_blank');
+            printWindow.document.write(html);
+            printWindow.document.close();
+            
+            // Aggiungi stili inline per nascondere header/footer di stampa
+            const style = printWindow.document.createElement('style');
+            style.innerHTML = `
+                @page {
+                    margin: 0;
+                }
+                @media print {
+                    body {
+                        margin: 10mm;
+                    }
+                    @page {
+                        size: A4;
+                        margin: 0;
+                    }
+                }
+            `;
+            printWindow.document.head.appendChild(style);
+            
+            // Imposta il titolo vuoto per evitare che appaia nell'header
+            printWindow.document.title = '';
+            
+            setTimeout(() => {
+                printWindow.print();
+            }, 250);
+        }
+
+        // Inizializza l'app
+        init();
+    </script>
+</body>
+</html>
