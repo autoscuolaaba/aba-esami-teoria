@@ -15,7 +15,19 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
+            -webkit-tap-highlight-color: transparent !important;
+            -webkit-tap-highlight-color: rgba(0,0,0,0) !important;
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+        
+        /* Forza la rimozione di tutti gli effetti di selezione */
+        input, textarea, button, select, a, div {
+            -webkit-tap-highlight-color: transparent !important;
+            outline: none !important;
         }
 
         :root {
@@ -56,11 +68,8 @@
         /* Glassmorphism panels - semplificato */
         .glass-panel {
             background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
             border-radius: 24px;
             border: 1px solid rgba(255, 255, 255, 0.3);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
             overflow: hidden;
             position: relative;
         }
@@ -179,7 +188,6 @@
             cursor: pointer;
             font-size: 14px;
             font-weight: 600;
-            transition: background-color 0.2s, transform 0.1s;
             display: inline-flex;
             align-items: center;
             gap: 8px;
@@ -227,123 +235,40 @@
         /* Rimossa animazione shimmer sui bottoni */
 
         .btn-glass-primary {
-            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            background: var(--primary);
             color: white;
-            box-shadow: 0 6px 20px rgba(220, 38, 38, 0.3);
         }
 
         .btn-glass-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(220, 38, 38, 0.35);
-            background: linear-gradient(135deg, var(--primary-light), var(--primary));
+            background: var(--primary-light);
         }
 
         .btn-glass-azzurro {
-            background: linear-gradient(135deg, var(--azzurro), var(--azzurro-dark));
+            background: var(--azzurro-dark);
             color: white;
-            box-shadow: 0 6px 20px rgba(125, 211, 252, 0.3);
         }
 
         .btn-glass-azzurro:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(125, 211, 252, 0.35);
-            background: linear-gradient(135deg, var(--azzurro), var(--azzurro-darker));
+            background: var(--azzurro-darker);
         }
 
         .btn-glass-secondary {
             background: rgba(255, 255, 255, 0.2);
             color: var(--text-dark);
             border: 1px solid rgba(255, 255, 255, 0.3);
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
         }
 
         .btn-glass-secondary:hover {
             background: rgba(255, 255, 255, 0.3);
-            transform: translateY(-1px);
         }
 
         .btn-glass-danger {
-            background: linear-gradient(135deg, #ef4444, #dc2626);
+            background: #dc2626;
             color: white;
-            box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);
         }
 
         .btn-glass-danger:hover {
-            transform: scale(1.02);
-            background: linear-gradient(135deg, #f87171, #ef4444);
-        }
-
-        /* Stats cards */
-        .stats-panel {
-            padding: 25px;
-            margin-bottom: 20px;
-            display: none;
-        }
-
-        .stats-panel.active {
-            display: block;
-        }
-
-        .stats-panel h2 {
-            font-weight: 600;
-            letter-spacing: -0.5px;
-            font-size: 20px;
-            margin-bottom: 20px;
-        }
-
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 15px;
-        }
-
-        .stat-card {
-            padding: 20px;
-            border-radius: 16px;
-            color: white;
-            text-align: center;
-            position: relative;
-            overflow: hidden;
-            transition: transform 0.2s;
-        }
-
-        /* Rimossa animazione pulse */
-
-        .stat-card:hover {
-            transform: translateY(-2px);
-        }
-
-        .stat-card.red {
-            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-        }
-
-        .stat-card.azzurro {
-            background: linear-gradient(135deg, var(--azzurro), var(--azzurro-dark));
-        }
-
-        .stat-card.mixed {
-            background: linear-gradient(135deg, var(--primary-light), var(--azzurro));
-        }
-
-        .stat-card.orange {
-            background: linear-gradient(135deg, #fb923c, #f97316);
-        }
-
-        .stat-value {
-            font-size: 36px;
-            font-weight: 800;
-            margin-bottom: 5px;
-            position: relative;
-            z-index: 1;
-        }
-
-        .stat-label {
-            font-size: 12px;
-            opacity: 0.95;
-            font-weight: 500;
-            position: relative;
-            z-index: 1;
-            letter-spacing: 0.5px;
+            background: #ef4444;
         }
 
         /* Main content grid */
@@ -379,7 +304,6 @@
             border: 1px solid rgba(220, 38, 38, 0.2);
             border-radius: 12px;
             cursor: pointer;
-            transition: background-color 0.2s;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -414,6 +338,40 @@
             gap: 8px;
         }
 
+        /* Regole estremamente aggressive per eliminare ogni effetto su iOS/Safari */
+        @supports (-webkit-touch-callout: none) {
+            /* Solo per iOS Safari */
+            .day,
+            .day.selected,
+            .day.today,
+            .day.has-students,
+            .day.full {
+                -webkit-tap-highlight-color: transparent !important;
+                -webkit-tap-highlight-color: rgba(0, 0, 0, 0) !important;
+                -webkit-user-select: none !important;
+                -webkit-touch-callout: none !important;
+                -webkit-appearance: none !important;
+                box-shadow: none !important;
+                -webkit-box-shadow: none !important;
+                text-shadow: none !important;
+                filter: none !important;
+                -webkit-filter: none !important;
+                backdrop-filter: none !important;
+                -webkit-backdrop-filter: none !important;
+                outline: none !important;
+                outline-offset: 0 !important;
+            }
+        }
+        
+        /* Rimuovi ogni possibile effetto glow/shadow */
+        .days-grid * {
+            box-shadow: none !important;
+            -webkit-box-shadow: none !important;
+            text-shadow: none !important;
+            filter: none !important;
+            -webkit-filter: none !important;
+        }
+
         .day {
             aspect-ratio: 1;
             border-radius: 12px;
@@ -422,17 +380,36 @@
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            transition: background-color 0.2s, transform 0.1s;
             position: relative;
             background: rgba(255, 255, 255, 0.5);
-            backdrop-filter: blur(5px);
             border: 2px solid transparent;
             min-height: 45px;
+            outline: none !important;
+            -webkit-tap-highlight-color: transparent !important;
+            -webkit-tap-highlight-color: rgba(0,0,0,0) !important;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            box-shadow: none !important;
+            filter: none !important;
+            -webkit-box-shadow: none !important;
+        }
+        
+        /* Elimina ogni possibile effetto su tutti gli stati */
+        .day:focus,
+        .day:active,
+        .day:focus-visible,
+        .day:focus-within,
+        .day:target {
+            outline: none !important;
+            box-shadow: none !important;
+            -webkit-box-shadow: none !important;
+            filter: none !important;
+            -webkit-tap-highlight-color: transparent !important;
         }
 
         .day:hover:not(.disabled) {
             background: rgba(255, 255, 255, 0.8);
-            transform: scale(1.02);
         }
 
         .day.disabled {
@@ -448,10 +425,9 @@
         }
 
         .day.selected {
-            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            background: var(--primary);
             color: white;
-            transform: scale(1.05);
-            box-shadow: 0 8px 20px rgba(220, 38, 38, 0.4);
+            border-color: var(--primary);
         }
 
         .day.has-students {
@@ -545,7 +521,6 @@
             height: 5px;
             border-radius: 3px;
             background: rgba(0, 0, 0, 0.1);
-            transition: background-color 0.2s;
         }
 
         .slot.occupied {
@@ -555,7 +530,6 @@
 
         .add-student-form {
             background: rgba(255, 255, 255, 0.5);
-            backdrop-filter: blur(5px);
             border-radius: 16px;
             padding: 20px;
             margin-bottom: 18px;
@@ -588,7 +562,6 @@
             border: 2px solid rgba(0, 0, 0, 0.1);
             border-radius: 10px;
             font-size: 14px;
-            transition: border-color 0.2s;
             background: rgba(255, 255, 255, 0.8);
             font-family: 'Poppins', sans-serif;
         }
@@ -628,20 +601,17 @@
 
         .student-item {
             background: rgba(255, 255, 255, 0.6);
-            backdrop-filter: blur(5px);
             border-radius: 12px;
             padding: 14px;
             margin-bottom: 10px;
             display: flex;
             align-items: center;
             gap: 12px;
-            transition: background-color 0.2s, transform 0.1s;
             border: 1px solid rgba(255, 255, 255, 0.3);
         }
 
         .student-item:hover {
             background: rgba(255, 255, 255, 0.9);
-            transform: translateX(2px);
         }
 
         .student-item.expiry-warning {
@@ -753,7 +723,6 @@
             border: 1px solid rgba(0, 0, 0, 0.1);
             border-radius: 8px;
             cursor: pointer;
-            transition: background-color 0.2s, transform 0.1s;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -771,12 +740,10 @@
 
         .btn-icon:first-child:hover {
             background: linear-gradient(135deg, var(--azzurro), var(--azzurro-dark));
-            transform: scale(1.05);
         }
 
         .btn-icon:hover {
             background: white;
-            transform: scale(1.05);
         }
 
         .btn-icon.delete:hover {
@@ -901,33 +868,15 @@
             justify-content: flex-end;
         }
 
-        /* Footer */
+        /* Footer minimalista */
         .footer {
             text-align: center;
-            padding: 30px 20px;
+            padding: 20px;
             color: white;
-            margin-top: 40px;
-        }
-
-        .footer-logo {
-            font-size: 28px;
-            font-weight: 800;
-            letter-spacing: -2px;
-            margin-bottom: 8px;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
-        }
-
-        .footer-text {
-            font-size: 12px;
-            opacity: 0.9;
-            line-height: 1.5;
-            font-weight: 300;
+            margin-top: 30px;
         }
 
         .footer-credits {
-            margin-top: 15px;
-            padding-top: 15px;
-            border-top: 1px solid rgba(255, 255, 255, 0.2);
             font-size: 10px;
             opacity: 0.7;
             font-weight: 300;
@@ -993,15 +942,6 @@
                 width: 100%;
             }
 
-            .stats-grid {
-                grid-template-columns: repeat(2, 1fr);
-                gap: 10px;
-            }
-
-            .stat-value {
-                font-size: 28px;
-            }
-
             .calendar-panel, .management-panel {
                 padding: 18px;
             }
@@ -1061,12 +1001,9 @@
             }
 
             .footer {
-                padding: 20px 15px;
+                padding: 15px 10px;
             }
-
-            .footer-logo {
-                font-size: 24px;
-            }
+        }
 
             /* Stacking per mobile */
             .management-panel {
@@ -1115,18 +1052,6 @@
                 min-width: 15px;
                 height: 15px;
             }
-
-            .stat-card {
-                padding: 15px;
-            }
-
-            .stat-value {
-                font-size: 24px;
-            }
-
-            .stat-label {
-                font-size: 10px;
-            }
         }
 
         /* Rimuovo tutte le animazioni di caricamento */
@@ -1163,35 +1088,9 @@
                     </div>
                 </div>
                 <div class="action-buttons">
-                    <button class="btn btn-glass-secondary" onclick="toggleStats()">
-                        📊 Statistiche
+                    <button class="btn btn-glass-primary btn-xxl" onclick="inviaInUfficio()">
+                        📱 INVIA IN UFFICIO
                     </button>
-                    <button class="btn btn-glass-primary btn-xxl" onclick="generatePDF()">
-                        📄 GENERA PDF
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Stats Panel -->
-        <div class="stats-panel glass-panel" id="statsPanel">
-            <h2 style="color: var(--text-dark);">📈 Statistiche del Mese</h2>
-            <div class="stats-grid">
-                <div class="stat-card red">
-                    <div class="stat-value" id="totalStudents">0</div>
-                    <div class="stat-label">Allievi Totali</div>
-                </div>
-                <div class="stat-card azzurro">
-                    <div class="stat-value" id="examDays">0</div>
-                    <div class="stat-label">Giorni d'Esame</div>
-                </div>
-                <div class="stat-card mixed">
-                    <div class="stat-value" id="avgPerDay">0.0</div>
-                    <div class="stat-label">Media per Giorno</div>
-                </div>
-                <div class="stat-card orange">
-                    <div class="stat-value" id="specialNeeds">0</div>
-                    <div class="stat-label">Esigenze Speciali</div>
                 </div>
             </div>
         </div>
@@ -1253,17 +1152,10 @@
             </div>
         </div>
 
-        <!-- Footer -->
+        <!-- Footer minimo -->
         <div class="footer">
-            <div class="footer-logo">ABA AUTOSCUOLE</div>
-            <div class="footer-text">
-                Sistema di Gestione Esami di Teoria<br>
-                Pianifica, organizza e stampa il riepilogo mensile delle sedute d'esame
-            </div>
             <div class="footer-credits">
-                © 2025 ABA Autoscuole • Tutti i diritti riservati<br>
-                La copia del software è vietata per legge<br>
-                v2.0 Professional Edition
+                © 2025 ABA Autoscuole • La copia del software è vietata per legge
             </div>
         </div>
     </div>
@@ -1318,8 +1210,12 @@
                     dayClass += isFull ? ' full' : ' has-students';
                 }
                 
+                // Aggiungo stili inline per forzare la rimozione di ogni effetto
+                const inlineStyles = isSelected ? 
+                    'style="box-shadow: none !important; -webkit-box-shadow: none !important; filter: none !important; -webkit-filter: none !important; outline: none !important; -webkit-tap-highlight-color: transparent !important;"' : '';
+                
                 html += `
-                    <div class="${dayClass}" onclick="selectDate(${year}, ${month}, ${day})">
+                    <div class="${dayClass}" onclick="selectDate(${year}, ${month}, ${day})" ${inlineStyles}>
                         <div class="day-number">${day}</div>
                         ${studentCount > 0 ? 
                           `<div class="student-count">${studentCount}</div>` : ''}
@@ -1335,6 +1231,18 @@
             selectedDate = new Date(year, month, day, 12, 0, 0);
             renderCalendar();
             renderManagementPanel();
+            
+            // Forza la rimozione di qualsiasi effetto visivo dopo la selezione
+            setTimeout(() => {
+                const selectedDay = document.querySelector('.day.selected');
+                if (selectedDay) {
+                    selectedDay.style.boxShadow = 'none';
+                    selectedDay.style.webkitBoxShadow = 'none';
+                    selectedDay.style.filter = 'none';
+                    selectedDay.style.webkitFilter = 'none';
+                    selectedDay.style.outline = 'none';
+                }
+            }, 0);
         }
 
         function renderManagementPanel() {
@@ -1816,12 +1724,8 @@
             localStorage.setItem('examStudents', JSON.stringify(students));
         }
 
-        function toggleStats() {
-            const panel = document.getElementById('statsPanel');
-            panel.classList.toggle('active');
-        }
-
         function updateStats() {
+            // Mantiene solo i calcoli interni senza mostrare nulla visivamente
             const year = currentDate.getFullYear();
             const month = currentDate.getMonth();
             
@@ -1849,29 +1753,9 @@
                     });
                 }
             });
-            
-            const avgPerDay = examDays > 0 ? (totalStudents / examDays).toFixed(1) : '0.0';
-            
-            document.getElementById('totalStudents').textContent = totalStudents;
-            document.getElementById('examDays').textContent = examDays;
-            document.getElementById('avgPerDay').textContent = avgPerDay;
-            
-            // Cambia l'ultima statistica per mostrare scadenze critiche se ci sono
-            const specialNeedsElement = document.getElementById('specialNeeds');
-            const statCard = specialNeedsElement.parentElement.parentElement;
-            
-            if (criticalExpiry > 0) {
-                specialNeedsElement.textContent = criticalExpiry;
-                specialNeedsElement.nextElementSibling.textContent = 'Scadenze Critiche';
-                statCard.className = 'stat-card red';
-            } else {
-                specialNeedsElement.textContent = specialNeeds;
-                specialNeedsElement.nextElementSibling.textContent = 'Esigenze Speciali';
-                statCard.className = 'stat-card orange';
-            }
         }
 
-        function generatePDF() {
+        function inviaInUfficio() {
             const year = currentDate.getFullYear();
             const month = currentDate.getMonth();
             const monthName = `${monthNames[month]} ${year}`;
@@ -1896,465 +1780,73 @@
             
             const sortedDates = Object.keys(monthData).sort();
             
-            // DIMENSIONI OTTIMIZZATE PER LA STAMPA - PERFETTO EQUILIBRIO
-            let baseFontSize = 12;       // Testo normale leggibile
-            let headerFontSize = 13;      // Intestazioni chiare
-            let titleFontSize = 18;      // Titolo ben visibile
-            let subTitleFontSize = 15;    // Sottotitoli nitidi
-            let padding = 12;             // Spaziatura comoda
-            let logoSize = 36;           // Logo ben definito
-            let monthBannerSize = 18;    // Banner evidente
-            
-            // Riduzione graduale solo quando davvero necessario
-            if (totalStudents > 100) {
-                // Tantissimi allievi - ancora leggibile
-                baseFontSize = 10;
-                headerFontSize = 11;
-                titleFontSize = 15;
-                subTitleFontSize = 13;
-                padding = 9;
-            } else if (totalStudents > 60) {
-                // Molti allievi - compatto ma chiaro
-                baseFontSize = 11;
-                headerFontSize = 12;
-                titleFontSize = 16;
-                subTitleFontSize = 14;
-                padding = 10;
-            } else if (totalStudents > 30) {
-                // Contenuto medio - leggermente ridotto
-                baseFontSize = 11.5;
-                headerFontSize = 12.5;
-                titleFontSize = 17;
-                subTitleFontSize = 14;
-                padding = 11;
-            }
-            
-            let html = `
-                <!DOCTYPE html>
-                <html lang="it">
-                <head>
-                    <meta charset="UTF-8">
-                    <title>Riepilogo Esami - ${monthName}</title>
-                    <style>
-                        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap');
-                        
-                        @page { 
-                            size: A4; 
-                            margin: ${totalStudents > 60 ? '8mm' : '10mm'};
-                            /* Rimuove completamente header e footer del browser */
-                        }
-                        
-                        @page:first {
-                            margin-top: ${totalStudents > 60 ? '8mm' : '10mm'};
-                        }
-                        
-                        @media print {
-                            /* Rimuove header e footer del browser */
-                            @page {
-                                margin-top: 0;
-                                margin-bottom: 0;
-                            }
-                            
-                            body {
-                                -webkit-print-color-adjust: exact;
-                                print-color-adjust: exact;
-                                margin-top: ${totalStudents > 60 ? '8mm' : '10mm'};
-                                margin-bottom: ${totalStudents > 60 ? '8mm' : '10mm'};
-                            }
-                            
-                            /* Nasconde completamente gli elementi di sistema */
-                            * {
-                                -webkit-print-color-adjust: exact !important;
-                                color-adjust: exact !important;
-                            }
-                        }
-                        
-                        body { 
-                            font-family: 'Poppins', -apple-system, sans-serif;
-                            line-height: 1.3;
-                            color: #333;
-                            max-width: 800px;
-                            margin: 0 auto;
-                            font-size: ${baseFontSize}px;
-                        }
-                        
-                        .header {
-                            text-align: center;
-                            padding-bottom: 15px;
-                            margin-bottom: ${totalStudents > 50 ? '15px' : '20px'};
-                            position: relative;
-                        }
-                        
-                        .summary-box {
-                            background: #f8f9fa;
-                            padding: ${padding}px;
-                            border-radius: 6px;
-                            margin: ${padding}px 0;
-                            border: 1px solid #dee2e6;
-                        }
-                        
-                        .summary-grid {
-                            display: grid;
-                            grid-template-columns: repeat(4, 1fr);
-                            gap: 10px;
-                            text-align: center;
-                        }
-                        
-                        .summary-item {
-                            padding: ${totalStudents > 50 ? '4px' : '6px'};
-                        }
-                        
-                        .summary-value {
-                            font-size: ${totalStudents > 50 ? '14px' : '16px'};
-                            font-weight: 700;
-                            color: #dc2626;
-                            margin-bottom: 2px;
-                            font-family: 'Poppins', sans-serif;
-                        }
-                        
-                        .summary-label {
-                            font-size: ${totalStudents > 50 ? '7px' : '8px'};
-                            color: #666;
-                            text-transform: uppercase;
-                            letter-spacing: 0.3px;
-                            font-weight: 500;
-                        }
-                        
-                        .day-section {
-                            margin: ${totalStudents > 50 ? '12px' : '15px'} 0;
-                            padding: ${padding}px;
-                            background: #fafbfc;
-                            border-left: 2px solid #7dd3fc;
-                            page-break-inside: avoid;
-                        }
-                        
-                        .day-header {
-                            display: flex;
-                            justify-content: space-between;
-                            align-items: center;
-                            margin-bottom: ${totalStudents > 50 ? '6px' : '8px'};
-                            color: #1a1a1a;
-                            font-size: ${headerFontSize}px;
-                            font-weight: 500;
-                        }
-                        
-                        .slots-info {
-                            font-size: ${baseFontSize - 1}px;
-                            padding: 2px 6px;
-                            background: white;
-                            border-radius: 10px;
-                            color: #0ea5e9;
-                            border: 1px solid #7dd3fc;
-                            font-weight: 500;
-                        }
-                        
-                        .student-table {
-                            width: 100%;
-                            border-collapse: collapse;
-                            background: white;
-                        }
-                        
-                        .student-table th {
-                            background: #f1f3f5;
-                            color: #495057;
-                            padding: ${totalStudents > 50 ? '4px' : '6px'};
-                            text-align: left;
-                            font-weight: 600;
-                            font-size: ${baseFontSize}px;
-                            text-transform: uppercase;
-                            letter-spacing: 0.3px;
-                        }
-                        
-                        .student-table td {
-                            padding: ${totalStudents > 50 ? '4px 3px' : '6px 4px'};
-                            border-bottom: 1px solid #e9ecef;
-                            font-weight: 400;
-                            font-size: ${baseFontSize}px;
-                        }
-                        
-                        .student-table tr:last-child td {
-                            border-bottom: none;
-                        }
-                        
-                        .type-badge {
-                            display: inline-block;
-                            padding: 1px 4px;
-                            border-radius: 3px;
-                            font-size: ${baseFontSize - 1}px;
-                            font-weight: 600;
-                        }
-                        
-                        .type-audio {
-                            background: #fff3cd;
-                            color: #856404;
-                        }
-                        
-                        .type-am {
-                            background: #e7d6ff;
-                            color: #5a189a;
-                        }
-                        
-                        .type-b-a1 {
-                            background: #e0f2fe;
-                            color: #0369a1;
-                        }
-                        
-                        .no-data {
-                            text-align: center;
-                            padding: 40px;
-                            color: #868e96;
-                        }
-                        
-                        .warning-box {
-                            background: #fff5f5;
-                            border: 1px solid #ffc9c9;
-                            color: #c92a2a;
-                            padding: ${totalStudents > 50 ? '3px 6px' : '4px 8px'};
-                            border-radius: 4px;
-                            margin: 6px 0;
-                            font-size: ${baseFontSize}px;
-                            font-weight: 500;
-                        }
-                        
-                        /* Stili per scadenze */
-                        .expiry-legend {
-                            margin-top: 8px;
-                            padding-top: 8px;
-                            border-top: 1px solid #dee2e6;
-                            font-size: ${baseFontSize - 2}px;
-                            display: flex;
-                            justify-content: center;
-                            gap: 10px;
-                            flex-wrap: wrap;
-                        }
-                        
-                        .legend-item {
-                            display: inline-flex;
-                            align-items: center;
-                            gap: 3px;
-                        }
-                        
-                        .legend-color {
-                            display: inline-block;
-                            width: 8px;
-                            height: 8px;
-                            border-radius: 1px;
-                        }
-                    </style>
-                </head>
-                <body>
-                    <div class="header">
-                        <div style="width: 100px; height: 40px; background: white; border: 1px solid #dc2626; border-radius: 6px; margin: 0 auto 8px auto; display: flex; align-items: center; justify-content: center; box-shadow: 0 1px 3px rgba(220, 38, 38, 0.1);">
-                            <div style="text-align: center;">
-                                <div style="font-size: ${logoSize}px; font-weight: 900; letter-spacing: -1px; color: #1a1a1a; font-family: 'Poppins', sans-serif; line-height: 1;">ABA</div>
-                                <div style="font-size: 6px; letter-spacing: 1px; color: #666; margin-top: 0; font-weight: 500;">AUTOSCUOLE</div>
-                            </div>
-                        </div>
-                        <h1 style="color: #1a1a1a; margin: 5px 0 8px 0; font-size: ${titleFontSize}px; font-weight: 600;">Pianificazione Teorie ABA Cartigliano</h1>
-                        <div style="color: #dc2626; font-size: ${monthBannerSize}px; font-weight: 700; letter-spacing: 0px; text-transform: uppercase; margin: 8px auto; padding: 4px 10px; background: linear-gradient(to right, rgba(220, 38, 38, 0.05), rgba(125, 211, 252, 0.05)); border-radius: 4px; border: 1px solid #dc2626; display: inline-block;">
-                            ${monthName}
-                        </div>
-                    </div>
-                    
-                    <div class="summary-box">
-                        <div class="summary-grid">
-                            <div class="summary-item">
-                                <div class="summary-value">${totalStudents}</div>
-                                <div class="summary-label">Totale Allievi</div>
-                            </div>
-                            <div class="summary-item">
-                                <div class="summary-value">${sortedDates.length}</div>
-                                <div class="summary-label">Giorni Esame</div>
-                            </div>
-                            <div class="summary-item">
-                                <div class="summary-value">${totalAudio}</div>
-                                <div class="summary-label">Con Audio</div>
-                            </div>
-                            <div class="summary-item">
-                                <div class="summary-value">${totalAM}</div>
-                                <div class="summary-label">Patenti AM</div>
-                            </div>
-                        </div>
-                        <div class="expiry-legend">
-                            <span class="legend-item">
-                                <span class="legend-color" style="background: #fee2e2;"></span>
-                                <span>Scaduta</span>
-                            </span>
-                            <span class="legend-item">
-                                <span class="legend-color" style="background: #fef2f2;"></span>
-                                <span>&lt;30gg</span>
-                            </span>
-                            <span class="legend-item">
-                                <span class="legend-color" style="background: #fff7ed;"></span>
-                                <span>&lt;60gg</span>
-                            </span>
-                            <span class="legend-item">
-                                <span class="legend-color" style="background: #fef9c3;"></span>
-                                <span>&lt;90gg</span>
-                            </span>
-                            <span class="legend-item">
-                                <span class="legend-color" style="background: #f0fdf4;"></span>
-                                <span>&gt;90gg</span>
-                            </span>
-                        </div>
-                    </div>
-            `;
+            // Prepara il messaggio per WhatsApp con nomi in grassetto
+            let message = `PIANIFICAZIONE TEORIE ABA CARTIGLIANO\n`;
+            message += `Mese: ${monthName}\n`;
+            message += `================================\n\n`;
             
             if (sortedDates.length === 0) {
-                html += `
-                    <div class="no-data">
-                        <h2 style="color: #adb5bd; font-size: ${titleFontSize}px;">Nessun esame programmato</h2>
-                        <p style="font-size: ${baseFontSize}px;">Non ci sono sedute d'esame pianificate per questo mese</p>
-                    </div>
-                `;
+                message += `Nessun esame programmato per questo mese\n`;
             } else {
+                message += `RIEPILOGO MENSILE\n`;
+                message += `• Totale Allievi: ${totalStudents}\n`;
+                message += `• Giorni d'esame: ${sortedDates.length}\n`;
+                message += `• Con Audio: ${totalAudio}\n`;
+                message += `• Patenti AM: ${totalAM}\n\n`;
+                
+                message += `DETTAGLIO GIORNATE\n`;
+                message += `================================\n`;
+                
                 sortedDates.forEach(dateStr => {
                     const date = new Date(dateStr);
                     const dayStudents = monthData[dateStr];
                     const dayName = date.toLocaleDateString('it-IT', {
                         weekday: 'long',
                         day: 'numeric',
-                        month: 'long',
-                        year: 'numeric'
+                        month: 'long'
                     });
                     
-                    html += `
-                        <div class="day-section">
-                            <div class="day-header">
-                                <span>${dayName}</span>
-                                <span class="slots-info">${dayStudents.length}/4 posti</span>
-                            </div>
-                            ${dayStudents.length === 4 ? 
-                              '<div class="warning-box">⚠️ Seduta completa</div>' : ''}
-                            <table class="student-table">
-                                <thead>
-                                    <tr>
-                                        <th style="width: 20px;">N°</th>
-                                        <th>Nome Allievo</th>
-                                        <th style="width: 45px;">Tipo</th>
-                                        <th style="width: 65px;">Scadenza</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                    `;
+                    message += `\n${dayName} (${dayStudents.length}/4 posti)\n`;
                     
                     dayStudents.forEach((student, index) => {
-                        const typeLabel = student.type === 'audio' ? 'AUDIO' :
-                                        student.type === 'am' ? 'AM' : 'B/A1';
-                        const typeClass = student.type === 'audio' ? 'type-audio' :
-                                        student.type === 'am' ? 'type-am' : 'type-b-a1';
+                        const typeLabel = student.type === 'audio' ? '[AUDIO]' :
+                                        student.type === 'am' ? '[AM]' : '[B/A1]';
                         
-                        // Calcola stato scadenza
-                        const expiryInfo = student.enrollmentDate ? 
-                            calculateExpiryStatus(student.enrollmentDate, date) : null;
-                        
-                        let rowStyle = '';
-                        
-                        if (expiryInfo) {
+                        let warningText = '';
+                        if (student.enrollmentDate) {
+                            const expiryInfo = calculateExpiryStatus(student.enrollmentDate, date);
                             if (expiryInfo.expired) {
-                                rowStyle = 'background: #fee2e2;';
+                                warningText = ' - SCADUTA';
                             } else if (expiryInfo.critical) {
-                                rowStyle = 'background: #fef2f2;';
-                            } else if (expiryInfo.warning) {
-                                rowStyle = 'background: #fff7ed;';
+                                warningText = ' - ULTIMO TENTATIVO';
                             }
                         }
                         
-                        html += `
-                            <tr style="${rowStyle}">
-                                <td style="text-align: center; font-weight: bold;">${index + 1}</td>
-                                <td style="font-size: ${baseFontSize}px;">
-                                    ${student.name}
-                                    ${expiryInfo && (expiryInfo.expired || expiryInfo.critical) ? 
-                                      `<span style="color: #dc2626; font-weight: 700; font-size: ${baseFontSize - 1}px;"> ⚠️</span>` : ''}
-                                </td>
-                                <td>
-                                    <span class="type-badge ${typeClass}">${typeLabel}</span>
-                                </td>
-                                <td style="font-size: ${baseFontSize - 1}px;">
-                                    ${student.enrollmentDate ? 
-                                      (() => {
-                                          const enrollDate = new Date(student.enrollmentDate);
-                                          const expiryDate = new Date(enrollDate);
-                                          expiryDate.setMonth(expiryDate.getMonth() + 6);
-                                          const daysRemaining = Math.ceil((expiryDate - date) / (1000 * 60 * 60 * 24));
-                                          
-                                          let cellBg = '';
-                                          let textColor = '#333';
-                                          
-                                          if (daysRemaining <= 0) {
-                                              cellBg = 'background: #fee2e2;';
-                                              textColor = '#dc2626';
-                                          } else if (daysRemaining <= 30) {
-                                              cellBg = 'background: #fef2f2;';
-                                              textColor = '#dc2626';
-                                          } else if (daysRemaining <= 60) {
-                                              cellBg = 'background: #fff7ed;';
-                                              textColor = '#ea580c';
-                                          } else if (daysRemaining <= 90) {
-                                              cellBg = 'background: #fef9c3;';
-                                              textColor = '#a16207';
-                                          } else {
-                                              cellBg = 'background: #f0fdf4;';
-                                              textColor = '#16a34a';
-                                          }
-                                          
-                                          return `
-                                            <div style="${cellBg} padding: 2px; border-radius: 2px; margin: -2px; color: ${textColor}; font-weight: 600;">
-                                              ${expiryDate.toLocaleDateString('it-IT', {day: '2-digit', month: '2-digit', year: '2-digit'})}
-                                              <span style="font-size: ${baseFontSize - 2}px;">
-                                                (${daysRemaining > 0 ? `${daysRemaining}gg` : 'SCAD'})
-                                              </span>
-                                            </div>
-                                          `;
-                                      })() : 
-                                      '<div style="color: #868e96;">-</div>'}
-                                </td>
-                            </tr>
-                        `;
+                        // Nome in grassetto per WhatsApp
+                        message += `${index + 1}. *${student.name}* ${typeLabel}${warningText}\n`;
                     });
-                    
-                    html += `
-                                </tbody>
-                            </table>
-                        </div>
-                    `;
                 });
+                
+                message += `\n================================\n`;
             }
             
-            html += `
-                </body>
-                </html>
-            `;
+            // Numero di WhatsApp (rimuovi il + per l'URL)
+            const phoneNumber = '390424523690';
             
-            const printWindow = window.open('', '_blank');
-            printWindow.document.write(html);
-            printWindow.document.close();
+            // Codifica il messaggio per l'URL
+            const encodedMessage = encodeURIComponent(message);
             
-            // Aggiungi stili inline per nascondere header/footer di stampa
-            const style = printWindow.document.createElement('style');
-            style.innerHTML = `
-                @page {
-                    margin: 0;
-                }
-                @media print {
-                    body {
-                        margin: 10mm;
-                    }
-                    @page {
-                        size: A4;
-                        margin: 0;
-                    }
-                }
-            `;
-            printWindow.document.head.appendChild(style);
+            // Apri WhatsApp Web o l'app mobile con il messaggio precompilato
+            const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodedMessage}`;
             
-            // Imposta il titolo vuoto per evitare che appaia nell'header
-            printWindow.document.title = '';
-            
-            setTimeout(() => {
-                printWindow.print();
-            }, 250);
+            // Se siamo su mobile, prova ad aprire l'app WhatsApp
+            if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+                // Su mobile usa l'URL dell'app
+                window.location.href = `whatsapp://send?phone=${phoneNumber}&text=${encodedMessage}`;
+            } else {
+                // Su desktop apri WhatsApp Web in una nuova finestra
+                window.open(whatsappUrl, '_blank');
+            }
         }
 
         // Inizializza l'app
